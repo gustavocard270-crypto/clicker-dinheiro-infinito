@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clicker do Dinheiro Infinito</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#101827;color:#f8fafc;display:flex;justify-content:center;padding:24px}
+main{width:min(720px,100%)}h1{text-align:center;margin-top:0}.panel{background:#1e293b;border:1px solid #334155;border-radius:18px;padding:18px;margin:14px 0}.money{text-align:center;font-size:clamp(32px,8vw,54px);font-weight:900;color:#4ade80;overflow-wrap:anywhere}.muted{color:#cbd5e1;text-align:center}.click{width:100%;border:3px solid #86efac;border-radius:22px;background:linear-gradient(135deg,#16a34a,#22c55e);color:white;font-weight:900;font-size:24px;padding:25px 12px;cursor:pointer}.click:active{transform:scale(.98)}.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat{text-align:center}.stat strong{display:block;font-size:24px;margin-top:6px}.upgrade{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:14px;margin:8px 0;border-radius:12px;border:1px solid #475569;background:#273449;color:#fff;cursor:pointer;font-size:15px}.upgrade small{display:block;color:#cbd5e1;margin-top:4px}.upgrade:disabled{opacity:.45;cursor:not-allowed}.upgrade b{white-space:nowrap}button:focus-visible{outline:3px solid #facc15;outline-offset:3px}.reset{background:none;border:0;color:#cbd5e1;text-decoration:underline;cursor:pointer;padding:8px}
+</style>
+</head>
+<body>
+<main>
+<h1>💸 Clicker do Dinheiro Infinito</h1>
+<section class="panel">
+<div class="muted">SEU DINHEIRO</div><div id="cash" class="money">R$ 0</div>
+<div class="muted">💵 Por clique: <b id="power">R$ 1</b> · 🏦 Por segundo: <b id="auto">R$ 0</b></div>
+</section>
+<button id="click" class="click">💰 CLICAR E FICAR RICO!<div style="font-size:14px;font-weight:normal;margin-top:8px">Clique para ganhar dinheiro</div></button>
+<div class="stats">
+<div class="panel stat">🖱️ Total de cliques<strong id="total">0</strong></div>
+<div class="panel stat">🏆 Nível de riqueza<strong id="level">Pobre premium</strong></div>
+</div>
+<section class="panel">
+<h2>🛒 Loja de melhorias</h2>
+<button class="upgrade" id="up1"><span>👆 <b>Dedo turbo</b><small>+R$ 1 por clique</small></span><b id="cost1">R$ 25</b></button>
+<button class="upgrade" id="up2"><span>⚡ <b>Super clique</b><small>Dobra o ganho por clique</small></span><b id="cost2">R$ 250</b></button>
+<button class="upgrade" id="up3"><span>🏭 <b>Fábrica de dinheiro</b><small>+R$ 10 por segundo</small></span><b id="cost3">R$ 100</b></button>
+<button class="upgrade" id="up4"><span>🚀 <b>Impressora de dinheiro</b><small>+R$ 1.000 por segundo</small></span><b id="cost4">R$ 10 mil</b></button>
+</section>
+<section class="panel">
+<h3>📊 Estatísticas</h3>
+<p>Dinheiro ganho no total: <b id="earned">R$ 0</b></p>
+<p>Melhorias compradas: <b id="upgrades">0</b></p>
+<button class="reset" id="reset">Reiniciar jogo</button>
+</section>
+<p class="muted" style="font-size:13px">Jogo de dinheiro fictício. Seu progresso fica nesta página enquanto ela estiver aberta.</p>
+</main>
+<script>
+(()=> {
+let cash=0, earned=0, total=0, power=1, mult=1, auto=0, upgrades=0;
+let costs=[25,250,100,10000];
+const $=id=>document.getElementById(id);
+const fmt=n=>{
+ if(n>=1e15)return 'R$ '+(n/1e15).toFixed(2).replace('.',',')+' qua';
+ if(n>=1e12)return 'R$ '+(n/1e12).toFixed(2).replace('.',',')+' tri';
+ if(n>=1e9)return 'R$ '+(n/1e9).toFixed(2).replace('.',',')+' bi';
+ if(n>=1e6)return 'R$ '+(n/1e6).toFixed(2).replace('.',',')+' mi';
+ if(n>=1e3)return 'R$ '+(n/1e3).toFixed(2).replace('.',',')+' mil';
+ return 'R$ '+Math.floor(n).toLocaleString('pt-BR');
+};
+function level(){return cash>=1e15?'DEUS DO DINHEIRO 👑':cash>=1e12?'TRILIONÁRIO 🚀':cash>=1e9?'BILIONÁRIO 💎':cash>=1e6?'MILIONÁRIO 🤑':cash>=1e4?'RICO 😎':cash>=500?'Classe média 😏':'Pobre premium';}
+function render(){
+ $('cash').textContent=fmt(cash);$('power').textContent=fmt(power*mult);$('auto').textContent=fmt(auto);
+ $('total').textContent=total.toLocaleString('pt-BR');$('level').textContent=level();$('earned').textContent=fmt(earned);$('upgrades').textContent=upgrades;
+ costs.forEach((v,i)=>{$('cost'+(i+1)).textContent=fmt(v);$('up'+(i+1)).disabled=cash<v;});
+}
+function gain(n){cash+=n;earned+=n;render();}
+$('click').addEventListener('click',()=>{total++;gain(power*mult);});
+$('up1').addEventListener('click',()=>{if(cash<costs[0])return;cash-=costs[0];power++;costs[0]=Math.ceil(costs[0]*1.65);upgrades++;render();});
+$('up2').addEventListener('click',()=>{if(cash<costs[1])return;cash-=costs[1];mult*=2;costs[1]=Math.ceil(costs[1]*2.4);upgrades++;render();});
+$('up3').addEventListener('click',()=>{if(cash<costs[2])return;cash-=costs[2];auto+=10;costs[2]=Math.ceil(costs[2]*1.8);upgrades++;render();});
+$('up4').addEventListener('click',()=>{if(cash<costs[3])return;cash-=costs[3];auto+=1000;costs[3]=Math.ceil(costs[3]*2.5);upgrades++;render();});
+$('reset').addEventListener('click',()=>{if(!confirm('Tem certeza que quer reiniciar o jogo?'))return;cash=0;earned=0;total=0;power=1;mult=1;auto=0;upgrades=0;costs=[25,250,100,10000];render();});
+setInterval(()=>{if(auto>0)gain(auto/10);},100);render();
+})();
+</script>
+</body>
+</html>
